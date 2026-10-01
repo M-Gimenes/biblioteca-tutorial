@@ -1,0 +1,42 @@
+# Atividade 6 — Registrar avaliação de livro (REST Client: "Send Request")
+# Antes: `bun run dev`. Use um numeroRegistro que exista em data/biblioteca.sqlite.
+# Para repetir os testes de sucesso, troque a matrícula (cada uma avalia o livro só uma vez).
+
+@base = http://localhost:3000
+@nr = 2026-000001
+
+### 1. Sucesso com comentário — 201 + Location
+POST {{base}}/avaliacoes
+Content-Type: application/json
+
+{"numeroRegistro": "{{nr}}", "matricula": "LEITOR-42", "nota": 5, "comentario": "Excelente leitura"}
+
+### 2. Sucesso sem comentário — 201, comentario: null
+POST {{base}}/avaliacoes
+Content-Type: application/json
+
+{"numeroRegistro": "{{nr}}", "matricula": "LEITOR-7", "nota": 3}
+
+### 3. Mesma matrícula, mesmo livro — 409
+POST {{base}}/avaliacoes
+Content-Type: application/json
+
+{"numeroRegistro": "{{nr}}", "matricula": "LEITOR-42", "nota": 4}
+
+### 4. Livro inexistente — 404
+POST {{base}}/avaliacoes
+Content-Type: application/json
+
+{"numeroRegistro": "2099-999999", "matricula": "LEITOR-42", "nota": 4}
+
+### 5. Nota 6 — 400 (recusada pela entidade)
+POST {{base}}/avaliacoes
+Content-Type: application/json
+
+{"numeroRegistro": "{{nr}}", "matricula": "LEITOR-9", "nota": 6}
+
+### 6. Nota 0 — 400 (recusada já na entrada)
+POST {{base}}/avaliacoes
+Content-Type: application/json
+
+{"numeroRegistro": "{{nr}}", "matricula": "LEITOR-9", "nota": 0}
