@@ -1,0 +1,54 @@
+# Atividade 5 — Corrigir título de livro
+# Extensão do VS Code: "REST Client" (humao.rest-client).
+# Clique em "Send Request" que aparece acima de cada requisição.
+# Antes: `bun run dev` no terminal (servidor em http://localhost:3000).
+# ATENÇÃO: o `bun test` recria o banco e os ids mudam. Rode a requisição 0,
+# veja o id de "Orgulho e Preconceito" e coloque em @id.
+
+@base = http://localhost:3000
+@id = 56
+
+### 0. Ver os livros da Jane Austen (descobrir os ids)
+GET {{base}}/livros/Austen
+
+### 1. Sucesso — 200 com { id, isbn, titulo }
+PATCH {{base}}/livros/{{id}}/titulo
+Content-Type: application/json
+
+{"titulo": "Orgulho e Preconceito (edição revisada)"}
+
+### 2. Corrigir só a caixa do próprio título — 200 (não é duplicado de si mesmo)
+PATCH {{base}}/livros/{{id}}/titulo
+Content-Type: application/json
+
+{"titulo": "orgulho e preconceito (EDIÇÃO REVISADA)"}
+
+### 3. Livro inexistente — 404
+PATCH {{base}}/livros/999/titulo
+Content-Type: application/json
+
+{"titulo": "Qualquer"}
+
+### 4. Título vazio — 400
+PATCH {{base}}/livros/{{id}}/titulo
+Content-Type: application/json
+
+{"titulo": "   "}
+
+### 5. Id inválido na URL — 400
+PATCH {{base}}/livros/abc/titulo
+Content-Type: application/json
+
+{"titulo": "Qualquer"}
+
+### 6. Título igual ao de OUTRO livro do mesmo autor (caixa e espaços diferentes) — 409
+PATCH {{base}}/livros/{{id}}/titulo
+Content-Type: application/json
+
+{"titulo": "  EMMA  "}
+
+### 7. Voltar o título original
+PATCH {{base}}/livros/{{id}}/titulo
+Content-Type: application/json
+
+{"titulo": "Orgulho e Preconceito"}
